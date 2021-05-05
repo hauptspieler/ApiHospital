@@ -8,12 +8,14 @@ using System.Data;
 using System.Data.SqlClient;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using System.Configuration;
 
 namespace testeApi.Controllers
 {
     public class ValuesController : ApiController
     {
-        private SqlConnection con = new SqlConnection(@"server=DESKTOP-UR34453\SQLEXPRESS; database=Banco-de-teste; Integrated Security=true;");
+        static string conexao = ConfigurationManager.ConnectionStrings["bancosql"].ConnectionString;
+        private SqlConnection con = new SqlConnection(conexao);
        // GET api/values
         public string Get()
         {
@@ -86,11 +88,16 @@ namespace testeApi.Controllers
 
         }
 
+
+       
+       
+
         [HttpGet]
-        [Route("api/data/{date}")]
-        public IHttpActionResult data(float date)
+        [Route("api/data/{DtCad}")]
+        public IHttpActionResult data(string DtCad)
         {
-            SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM tbSimulaWebServiceTasy WHERE dtUltimoAtendimento like '%" + date + "%' ", con);
+
+            SqlDataAdapter da = new SqlDataAdapter("SELECT * FROM tbSimulaWebServiceTasy WHERE dtCadastro ='" + DtCad + "' ", con);
             DataTable dt = new DataTable();
             da.Fill(dt);
             if (dt.Rows.Count > 0)
@@ -105,53 +112,8 @@ namespace testeApi.Controllers
         }
 
 
-        //https://code-maze.com/net-core-web-development-part5/
+    
 
-
-
-
-
-            [Route("api/data/{date}")]
-            [HttpGet]
-            public IEnumerable<MyRecordType> GetByDateRange([FromUri] string startDateString, [FromUri] string endDateString)
-            {
-                var startDate = BuildDateTimeFromYAFormat(startDateString);
-                var endDate = BuildDateTimeFromYAFormat(endDateString);
-                ...
-    }
-
-            
-            private DateTime BuildDateTimeFromYAFormat(string dateString)
-            {
-                Regex r = new Regex(@"^\d{4}\d{2}\d{2}T\d{2}\d{2}Z$");
-                if (!r.IsMatch(dateString))
-                {
-                    throw new FormatException(
-                        string.Format(dateString));
-                }
-
-                DateTime dt = DateTime.ParseExact(dateString, "yyyyMMddThhmmZ", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal);
-
-                return dt;
-            }
-
-
-
-
-            //    // POST api/values
-            //    public void Post([FromBody] string value)
-            //    {
-            //    }
-
-            //    // PUT api/values/5
-            //    public void Put(int id, [FromBody] string value)
-            //    {
-            //    }
-
-            //    // DELETE api/values/5
-            //    public void Delete(int id)
-            //    {
-            //    }
 
 
 
